@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Companies Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .company {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .company-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .company-info {
+            color: #666;
+            margin-top: 5px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏢 Simple Companies Test</h1>
+    <p>Testing Supabase connection...</p>
+    
+    <div id="loading" class="loading">Loading companies...</div>
+    <div id="error" class="error" style="display: none;"></div>
+    <div id="companies"></div>
+
+    <script>
+        async function loadCompanies() {
+            const loadingEl = document.getElementById('loading');
+            const errorEl = document.getElementById('error');
+            const companiesEl = document.getElementById('companies');
+            
+            try {
+                // Simple fetch to test the connection
+                const response = await fetch('/api/simple-companies');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                loadingEl.style.display = 'none';
+                
+                if (data.success && data.companies) {
+                    companiesEl.innerHTML = data.companies.map(company => `
+                        <div class="company">
+                            <div class="company-name">${company.name || 'Unknown Company'}</div>
+                            <div class="company-info">
+                                Industry: ${company.industry || 'N/A'} | 
+                                Country: ${company.country || 'N/A'} | 
+                                FX Score: ${company.fx_score || 'N/A'}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    throw new Error(data.error || 'No companies found');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                loadingEl.style.display = 'none';
+                errorEl.textContent = `Error: ${error.message}`;
+                errorEl.style.display = 'block';
+            }
+        }
+        
+        // Load companies when page loads
+        document.addEventListener('DOMContentLoaded', loadCompanies);
+    </script>
+</body>
+</html>

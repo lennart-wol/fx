@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Companies Directory - Fashion & FX Intelligence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .data-source {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            font-style: italic;
+        }
+
+        .controls {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 2px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .companies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .company-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .company-card.tweet-source {
+            border: 2px solid #1da1f2;
+            box-shadow: 0 10px 30px rgba(29, 161, 242, 0.2);
+        }
+
+        .company-card.tweet-source::before {
+            content: "🐦 Recent X Activity";
+            position: absolute;
+            top: 15px;
+            right: -35px;
+            background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%);
+            color: white;
+            padding: 5px 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transform: rotate(45deg);
+            box-shadow: 0 2px 8px rgba(29, 161, 242, 0.3);
+            z-index: 10;
+        }
+
+        .company-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .company-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .company-name-section {
+            flex: 1;
+        }
+
+        .company-name-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .company-icons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .company-logo {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            object-fit: contain;
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .company-logo:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .linkedin-link {
+            color: #0077b5;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .linkedin-link:hover {
+            background: rgba(0, 119, 181, 0.1);
+            transform: scale(1.1);
+        }
+
+        .linkedin-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .company-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+
+
+        .fx-score {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #48dbfb 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-left: auto;
+        }
+
+        .fx-score.high { background: linear-gradient(135deg, #00b894 0%, #00cec9 100%); }
+        .fx-score.medium { background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%); }
+        .fx-score.low { background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); }
+
+        .company-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #718096;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        .company-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .company-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .action-button {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .sales-button {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .sales-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
+
+        .script-button {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+        }
+
+        .script-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+        }
+
+        .social-button {
+            background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%);
+            color: white;
+        }
+
+        .social-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(29, 161, 242, 0.3);
+        }
+
+        .tag {
+            background: #f7fafc;
+            color: #4a5568;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid #e2e8f0;
+        }
+
+        .tag.international {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 40px;
+            padding: 20px;
+        }
+
+        .pagination button {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            color: white;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .filters {
+                grid-template-columns: 1fr;
+            }
+            
+            .companies-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .company-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script src="demo-data.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Companies Directory</h1>
+            <p>Fashion & FX Industry Intelligence Platform</p>
+            <div class="data-source">
+                ⚡ Data Source: <strong>companies_directory</strong> materialized view via Supabase API
+            </div>
+        </div>
+
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-item">
+                <div class="stat-value" id="totalCompanies">-</div>
+                <div class="stat-label">Total Companies</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="avgFxScore">-</div>
+                <div class="stat-label">Avg FX Score</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="topIndustry">-</div>
+                <div class="stat-label">Top Industry</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="topCountry">-</div>
+                <div class="stat-label">Top Country</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="searchInput">Search Companies</label>
+                    <input type="text" id="searchInput" placeholder="Search by company name...">
+                </div>
+                <div class="filter-group">
+                    <label for="industryFilter">Industry</label>
+                    <select id="industryFilter">
+                        <option value="">All Industries</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="countryFilter">Country</label>
+                    <select id="countryFilter">
+                        <option value="">All Countries</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="sizeFilter">Company Size</label>
+                    <select id="sizeFilter">
+                        <option value="">All Sizes</option>
+                        <option value="Small">Small (< 100)</option>
+                        <option value="Medium">Medium (100-999)</option>
+                        <option value="Large">Large (1K-9.9K)</option>
+                        <option value="Enterprise">Enterprise (10K+)</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="revenueFilter">Revenue</label>
+                    <select id="revenueFilter">
+                        <option value="">All Revenue</option>
+                        <option value="<$10M">< $10M</option>
+                        <option value="$10M+">$10M+</option>
+                        <option value="$100M+">$100M+</option>
+                        <option value="$1B+">$1B+</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="sourceFilter">Data Source</label>
+                    <select id="sourceFilter">
+                        <option value="">All Sources</option>
+                        <option value="apollo">Apollo</option>
+                        <option value="tweet">🐦 Recent X Activity</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button class="btn btn-primary" onclick="applyFilters()">🔍 Search Companies</button>
+                <button class="btn btn-secondary" onclick="clearFilters()">🔄 Clear Filters</button>
+            </div>
+        </div>
+
+        <div id="loadingIndicator" class="loading" style="display: none;">
+            Loading companies...
+        </div>
+
+        <div id="errorMessage" class="error" style="display: none;"></div>
+
+        <div id="companiesGrid" class="companies-grid"></div>
+
+        <div class="pagination" id="pagination" style="display: none;">
+            <button id="prevBtn" onclick="previousPage()">← Previous</button>
+            <span class="pagination-info" id="paginationInfo">Page 1</span>
+            <button id="nextBtn" onclick="nextPage()">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        let currentFilters = {};
+        const pageSize = 24;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            loadFilters();
+            loadCompanies();
+        });
+
+        async function loadStats() {
+            try {
+                // Use demo data for now
+                const data = { success: true, stats: DEMO_STATS };
+                
+                if (data.success) {
+                    const stats = data.stats;
+                    document.getElementById('totalCompanies').textContent = stats.totalCompanies.toLocaleString();
+                    document.getElementById('avgFxScore').textContent = stats.avgFxScore || 'N/A';
+                    document.getElementById('topIndustry').textContent = 'Fashion';
+                    document.getElementById('topCountry').textContent = 'United States';
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadFilters() {
+            try {
+                // Use demo data for now
+                const data = { success: true, filters: DEMO_FILTERS };
+                
+                if (data.success) {
+                    const filters = data.filters;
+                    
+                    // Populate industry filter
+                    const industrySelect = document.getElementById('industryFilter');
+                    filters.industries.forEach(industry => {
+                        const option = document.createElement('option');
+                        option.value = industry;
+                        option.textContent = industry;
+                        industrySelect.appendChild(option);
+                    });
+                    
+                    // Populate country filter
+                    const countrySelect = document.getElementById('countryFilter');
+                    filters.countries.forEach(country => {
+                        const option = document.createElement('option');
+                        option.value = country;
+                        option.textContent = country;
+                        countrySelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading filters:', error);
+            }
+        }
+
+        async function loadCompanies() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const errorMessage = document.getElementById('errorMessage');
+            const companiesGrid = document.getElementById('companiesGrid');
+            
+            loadingIndicator.style.display = 'block';
+            errorMessage.style.display = 'none';
+            
+            try {
+                const params = new URLSearchParams({
+                    limit: pageSize,
+                    offset: currentPage * pageSize,
+                    ...currentFilters
+                });
+                
+                // Use demo data for now
+                const filteredCompanies = DEMO_COMPANIES.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
+                const data = { success: true, companies: filteredCompanies, pagination: { total: DEMO_COMPANIES.length, hasMore: (currentPage + 1) * pageSize < DEMO_COMPANIES.length } };
+                
+                if (data.success) {
+                    displayCompanies(data.companies);
+                    updatePagination(data.pagination);
+                } else {
+                    throw new Error(data.error || 'Failed to load companies');
+                }
+            } catch (error) {
+                console.error('Error loading companies:', error);
+                errorMessage.textContent = `Error: ${error.message}`;
+                errorMessage.style.display = 'block';
+                companiesGrid.innerHTML = '';
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        }
+
+        function displayCompanies(companies) {
+            const companiesGrid = document.getElementById('companiesGrid');
+            
+            if (companies.length === 0) {
+                companiesGrid.innerHTML = '<div style="text-align: center; color: white; font-size: 1.2rem; grid-column: 1/-1;">No companies found matching your criteria.</div>';
+                return;
+            }
+            
+            companiesGrid.innerHTML = companies.map(company => `
+                <div class="company-card ${company.source === 'tweet' ? 'tweet-source' : ''}" onclick="viewCompanyAnalysis('${company.id}')" style="cursor: pointer;">
+                    <div class="company-header">
+                        <div class="company-name-section">
+                            <div class="company-name-row">
+                                <div class="company-name">${company.name}</div>
+                                <div class="company-icons">
+                                    ${company.logo_url ? `<a href="${company.domain || '#'}" target="_blank" onclick="event.stopPropagation();" title="Visit Company Website">
+                                        <img src="${company.logo_url}" class="company-logo" onerror="this.style.display='none'" alt="${company.name} Logo" />
+                                    </a>` : ''}
+                                    ${company.linkedin_url ? `<a href="${company.linkedin_url}" target="_blank" class="linkedin-link" onclick="event.stopPropagation();" title="View LinkedIn Profile">
+                                        <svg class="linkedin-icon" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                        </svg>
+                                    </a>` : ''}
+                                </div>
+                            </div>
+
+                        </div>
+                        ${company.fx_score ? `<div class="fx-score ${getFxScoreClass(company.fx_score)}">FX: ${company.fx_score}</div>` : ''}
+                    </div>
+                    
+                    <div class="company-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Industry</div>
+                            <div class="detail-value">${company.industry || 'Unknown'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Employees</div>
+                            <div class="detail-value">${company.employee_count ? company.employee_count.toLocaleString() : 'Unknown'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Location</div>
+                            <div class="detail-value">${[company.city, company.country].filter(Boolean).join(', ') || 'Unknown'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Revenue</div>
+                            <div class="detail-value">${company.revenue_category || 'Unknown'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Source</div>
+                            <div class="detail-value">${company.source ? company.source.charAt(0).toUpperCase() + company.source.slice(1) : 'Unknown'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="company-tags">
+                        ${company.company_size ? `<span class="tag">${company.company_size}</span>` : ''}
+                        ${company.fx_industry_type ? `<span class="tag">${company.fx_industry_type}</span>` : ''}
+                        ${company.is_international ? '<span class="tag international">🌍 International</span>' : ''}
+                    </div>
+                    
+                    <div class="company-actions">
+                        <button class="action-button sales-button" onclick="viewSalesReport('${company.id}'); event.stopPropagation();">
+                            📈 Sales Report
+                        </button>
+                        <button class="action-button script-button" onclick="viewCallScript('${company.id}'); event.stopPropagation();">
+                            📞 Call Script
+                        </button>
+                        ${company.source === 'tweet' ? `<button class="action-button social-button" onclick="viewSocialActivity('${company.id}'); event.stopPropagation();">
+                            🐦 Related Tweets
+                        </button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getFxScoreClass(score) {
+            if (score >= 8) return 'high';
+            if (score >= 6) return 'medium';
+            return 'low';
+        }
+
+        function updatePagination(pagination) {
+            const paginationDiv = document.getElementById('pagination');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const paginationInfo = document.getElementById('paginationInfo');
+            
+            paginationDiv.style.display = 'flex';
+            prevBtn.disabled = currentPage === 0;
+            nextBtn.disabled = !pagination.has_more;
+            paginationInfo.textContent = `Page ${currentPage + 1}`;
+        }
+
+        function applyFilters() {
+            currentFilters = {
+                search: document.getElementById('searchInput').value,
+                industry: document.getElementById('industryFilter').value,
+                country: document.getElementById('countryFilter').value,
+                company_size: document.getElementById('sizeFilter').value,
+                revenue_category: document.getElementById('revenueFilter').value,
+                source: document.getElementById('sourceFilter').value
+            };
+            
+            // Remove empty filters
+            Object.keys(currentFilters).forEach(key => {
+                if (!currentFilters[key]) {
+                    delete currentFilters[key];
+                }
+            });
+            
+            currentPage = 0;
+            loadCompanies();
+        }
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('industryFilter').value = '';
+            document.getElementById('countryFilter').value = '';
+            document.getElementById('sizeFilter').value = '';
+            document.getElementById('revenueFilter').value = '';
+            document.getElementById('sourceFilter').value = '';
+            
+            currentFilters = {};
+            currentPage = 0;
+            loadCompanies();
+        }
+
+        function previousPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                loadCompanies();
+            }
+        }
+
+        function nextPage() {
+            currentPage++;
+            loadCompanies();
+        }
+
+        // Add enter key support for search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
+        });
+
+        // Function to view company analysis
+        function viewCompanyAnalysis(companyId) {
+            window.location.href = `/company-analysis?id=${companyId}`;
+        }
+
+        function viewSalesReport(companyId) {
+            window.location.href = `/sales-report?id=${companyId}`;
+        }
+
+        function viewCallScript(companyId) {
+            window.location.href = `/call-script?id=${companyId}`;
+        }
+
+        function viewSocialActivity(companyId) {
+            window.location.href = `/company-social-activity?id=${companyId}`;
+        }
+    </script>
+</body>
+</html>

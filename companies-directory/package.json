@@ -1,0 +1,13 @@
+{
+  "name": "companies-directory",
+  "version": "1.0.0",
+  "description": "Companies Directory - Fashion & FX Intelligence Platform",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Static site - no build needed'",
+    "start": "echo 'Static site deployed'"
+  },
+  "keywords": ["companies", "directory", "fashion", "fx", "intelligence", "supabase"],
+  "author": "FX Leads Team",
+  "license": "MIT"
+}
